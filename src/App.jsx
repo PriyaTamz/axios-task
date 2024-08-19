@@ -5,8 +5,8 @@ const apiURL = 'https://jsonplaceholder.typicode.com/users';
 
 function App() {
   const [users, setUsers] = useState([]);
-  const [localUsers, setLocalUsers] = useState([]); 
-  const [newUser, setNewUser] = useState({ 
+  const [localUsers, setLocalUsers] = useState([]);
+  const [newUser, setNewUser] = useState({
     name: '',
     email: '',
     address: {
@@ -33,26 +33,24 @@ function App() {
   };
 
   const addUser = async () => {
-    if (newUser.name && newUser.email) {
-      const response = await axios.post(apiURL, newUser);
-      const createdUser = { ...response.data, id: users.length + localUsers.length + 1 };
-      setLocalUsers([...localUsers, createdUser]); 
-      setNewUser({ 
-        name: '', 
-        email: '', 
-        address: {
-          street: '',
-          suite: '',
-          city: '',
-          zipcode: '',
-        }, 
-        phone: '',
-        company: {
-          name: '',
-        }
-      });
-    }
-  };
+    const response = await axios.post(apiURL, newUser);
+    const createdUser = { ...response.data, id: users.length + localUsers.length + 1 };
+    setLocalUsers([...localUsers, createdUser]);
+    setNewUser({
+      name: '',
+      email: '',
+      address: {
+        street: '',
+        suite: '',
+        city: '',
+        zipcode: '',
+      },
+      phone: '',
+      company: {
+        name: '',
+      }
+    });
+  }
 
   const deleteUser = async (id) => {
     if (id <= users.length) {
@@ -72,7 +70,6 @@ function App() {
   };
 
   const editUser = async () => {
-    if (editingUser.name && editingUser.email) {
       if (editingUser.id <= users.length) {
         const response = await axios.put(`${apiURL}/${editingUser.id}`, editingUser);
         setUsers(users.map(user => (user.id === editingUser.id ? response.data : user)));
@@ -80,7 +77,6 @@ function App() {
         setLocalUsers(localUsers.map(user => (user.id === editingUser.id ? editingUser : user)));
       }
       setEditingUser(null);
-    }
   };
 
   return (
@@ -161,7 +157,7 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {[...users, ...localUsers].map(user => (
+            {[...users, ...localUsers].sort((a, b) => b.id - a.id).map(user => (
               <tr key={user.id}>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
